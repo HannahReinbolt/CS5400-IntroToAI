@@ -199,7 +199,6 @@ def findall_bishop_moves(board, color):
     # variables
     history = {}
     choice = ""
-    print(color)
 
     # define choice
     if color == "black":
@@ -213,7 +212,7 @@ def findall_bishop_moves(board, color):
 
             # check choice
             if board[height][width] == choice:
-                print("Item: "+str(board[height][width]))
+                
                 # generate all diagonal moves
                 gen_lst = move_bishop([height, width])
 
@@ -246,7 +245,6 @@ def findall_bishop_moves(board, color):
                             history[curr_pos] = history[curr_pos] + [curr_pos + move[0]]
 
     # return all bishop moves
-    print("bishop history: "+str(history))
     return history
 
 
@@ -316,7 +314,7 @@ def move_castle(curr_pos):
 # returns: dictionary of lists
 def findall_castle_moves(board, color):
     # variables
-    history = {} # dictionary of past moves this will decrease search time
+    history = {}
     choice = ""
 
     # define choice
@@ -366,12 +364,12 @@ def findall_castle_moves(board, color):
     return history
 
 
-# find all queen moves
-# takes: TBD
-# returns: TBD
+# find all valid queen moves of one color
+# takes: board (list of lists) and color (str)
+# returns: dictionary of lists
 def findall_queen_moves(board, color):
     # variables
-    history = {} # dictionary of past moves this will decrease search time
+    history = {}
     choice = ""
 
     # define choice
@@ -395,28 +393,32 @@ def findall_queen_moves(board, color):
 
                 # iterate through all directions
                 for direction in gen_lst:
-                    # check all positions
-                    for position in direction:
 
-                        # find move but don't jump over pieces
-                        move = check_moves(board, [height, width], color, history, position, True)
-                        curr_pos = coor_to_uci(height, width)
+                    # only move if direction is not empty
+                    if direction != []:
 
-                        # check if there are no more moves possible for this direction
-                        if move == []:
-                            break
+                        # check all positions
+                        for position in direction:
 
-                        # make sure current is in history
-                        if curr_pos not in history:
-                            history[curr_pos] = []
+                            # find move but don't jump over pieces
+                            move = check_moves(board, [height, width], color, history, position, True)
+                            curr_pos = coor_to_uci(height, width)
 
-                        # if peice taken then end 
-                        if move[1] != '':
-                            history[curr_pos] = history[curr_pos] + [curr_pos + move[0] + move[1]]
-                            break
+                            # check if there are no more moves possible for this direction
+                            if move == []:
+                                break
 
-                        # if not blank then add to current moves and continue
-                        history[curr_pos] = history[curr_pos] + [curr_pos + move[0] + move[1]]
+                            # make sure current is in history
+                            if curr_pos not in history:
+                                history[curr_pos] = []
+
+                            # if peice taken then end 
+                            if move[1] != '':
+                                history[curr_pos] = history[curr_pos] + [curr_pos + move[0]]
+                                break
+
+                            # if not blank then add to current moves and continue
+                            history[curr_pos] = history[curr_pos] + [curr_pos + move[0]]
 
     # return all queen moves
     return history
@@ -597,11 +599,11 @@ def generate_all_nonking_moves(board, color):
     knights = findall_knight_moves(board, color)
     bishops = findall_bishop_moves(board, color)
     rooks = findall_castle_moves(board, color)
-    #queens = findall_queen_moves(board, color)
+    queens = findall_queen_moves(board, color)
     #pawns = findall_pawn_moves(board, color)
 
     # add them all together
-    for item in [bishops, rooks, knights]: # just bishops and knights for now
+    for item in [bishops, rooks, knights, queens]:
         all_moves.update(item)
 
     # return all moves
