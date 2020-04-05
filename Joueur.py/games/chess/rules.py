@@ -425,8 +425,9 @@ def findall_queen_moves(board, color):
 
 
 # find enemies for both sides for black and white
-# takes: TBD
-# returns: TBD
+# takes: board (list of lists), current position (list of int), left position (list of int),
+#        right position (list of int), and color (str)
+# returns: list of str
 def find_pawn_enemies(board, curr_pos, l_pos, r_pos, color):
     # variables
     # current position
@@ -457,7 +458,7 @@ def find_pawn_enemies(board, curr_pos, l_pos, r_pos, color):
 
             # check if enemy
             if isenemy == True:
-                history.append(curr_uci+new_uci+board[l_y][l_r])
+                history.append(curr_uci + new_uci)
 
         # check right side for enemies
         # make sure right side is in bounds
@@ -472,15 +473,15 @@ def find_pawn_enemies(board, curr_pos, l_pos, r_pos, color):
 
                 # check if enemy
                 if isenemy == True:
-                    history.append(curr_uci+new_uci+board[r_y][r_x])
+                    history.append(curr_uci + new_uci)
 
     # return history
     return history
 
 
-# generate pawn moves
-# takes: TBD
-# returns: TBD
+# generate all valid pawn moves of one color
+# takes: board (list of lists), current position (list of int) and color (str)
+# returns: list of str
 def generate_pawn_moves(board, curr_pos, color):
     # variables
     # current position
@@ -500,11 +501,11 @@ def generate_pawn_moves(board, curr_pos, color):
     new_uci = ""
     history = []
 
-    # chose color
+    # chose color, assume same board orientation every game, black top, white bottom
     if color == "black":
-        move = black_move
-    else:
         move = white_move
+    else:
+        move = black_move
 
     # check if at the end
     if y == move[0][1]:
@@ -512,7 +513,7 @@ def generate_pawn_moves(board, curr_pos, color):
         # check if spot right above is free
         if board[move[1]][x] == '0':
             new_uci = coor_to_uci(move[1], x)
-            history.append(curr_uci+new_uci)
+            history.append(curr_uci + new_uci)
 
         # if the spot is not free then pass
         # next check if there are enemies on eigher side
@@ -527,11 +528,11 @@ def generate_pawn_moves(board, curr_pos, color):
             # check if above that is free too
             if board[move[2]][x] == '0':
                 new_uci = coor_to_uci(move[2], x)
-                history.append(curr_uci+new_uci)
+                history.append(curr_uci + new_uci)
 
             # add move
             new_uci = coor_to_uci(move[1], x)
-            history.append(curr_uci+new_uci)
+            history.append(curr_uci + new_uci)
 
         # check side enemies
         enemies = find_pawn_enemies(board, curr_pos, move[3], move[4], color)
@@ -542,7 +543,7 @@ def generate_pawn_moves(board, curr_pos, color):
         # check if right above is free
         if board[move[1]][x] == '0':
             new_uci = coor_to_uci(move[1], x)
-            history.append(curr_uci+new_uci)
+            history.append(curr_uci + new_uci)
 
         # check side enemies
         enemies = find_pawn_enemies(board, curr_pos, move[3], move[4], color)
@@ -552,9 +553,9 @@ def generate_pawn_moves(board, curr_pos, color):
     return history
 
 
-# find all pawn moves
-# takes: TBD
-# returns: TBD
+# find all valid pawn moves for one color
+# takes: board (list of lists) and color (str)
+# returns: dictionary of lists
 def findall_pawn_moves(board, color):
     # variables
     history = {} # dictionary of past moves this will decrease search time
@@ -577,6 +578,10 @@ def findall_pawn_moves(board, color):
                 moves = generate_pawn_moves(board, [height, width], color)
                 curr_pos = coor_to_uci(height, width)
 
+                # pass if no moves 
+                if moves == []:
+                    continue
+
                 # make sure item is in history
                 if curr_pos not in history:
                     history[curr_pos] = []
@@ -598,12 +603,12 @@ def generate_all_nonking_moves(board, color):
     # generate all moves except kings
     knights = findall_knight_moves(board, color)
     bishops = findall_bishop_moves(board, color)
-    rooks = findall_castle_moves(board, color)
+    #rooks = findall_castle_moves(board, color)
     queens = findall_queen_moves(board, color)
-    #pawns = findall_pawn_moves(board, color)
+    pawns = findall_pawn_moves(board, color)
 
     # add them all together
-    for item in [bishops, rooks, knights, queens]:
+    for item in [bishops, pawns, knights, queens]:
         all_moves.update(item)
 
     # return all moves

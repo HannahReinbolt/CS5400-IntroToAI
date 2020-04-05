@@ -2,12 +2,11 @@
 # Name: Hannah Reinbolt
 # Date: 3-23-2020
 # Class:CS 5400-101 - Intro to AI
-# Assignment: Game Assignment #1 - Chess with Random Choice AI
-# Note: This is the Game Logic file. Game rules and logic.
+# Assignment: Game Assignment #2
+# Note: This is where game logic and game helper functions are stored.
 #############################################################
 
 # libraries
-#from games.chess.rules import * # importing this causes an issue
 
 
 # build board from fen line
@@ -23,10 +22,6 @@ def build_board_from_fen(board, color):
     others = fen[1:]
     fen = fen[0]
     fen = fen.split("/")
-    
-    # check color for board orientation
-    #if color == "white":
-    #    fen.reverse() # reverse this if player is black, otherwise it is in the correct orientation for white
 
     # build board
     for line in fen:
