@@ -12,10 +12,10 @@ from games.chess.rules import *
 from games.chess.game_logic import *
 
 
-# generate random move for AI
-# takes: fen str and color (str and str)
+# generate random nonking move for AI
+# takes: fen board (str) and color (str)
 # returns: str
-def generate_random_move(fen, color):
+def generate_random_nonking_move(fen, color):
     # generate fen board
     board = build_board_from_fen(fen, color)[:8]
 
@@ -25,18 +25,40 @@ def generate_random_move(fen, color):
     # random choice by piece
     # make list of pieces
     p_lst = [i for i in moves]
-    print("pieces: "+str(p_lst))
 
     # pick random piece
     rand_p = random.choice(p_lst)
-    print("random piece pick: "+str(rand_p))
 
     # pick random move
     move_lst = [i for i in moves[rand_p]]
     rand_move = random.choice(move_lst)
-    print("rand move pick: "+str(rand_move))
 
     # return random move and print random moves from that piece
     print(str(rand_p)+": "+str(moves[rand_p]))
     return rand_move
 
+
+# genreate random move for AI
+# takes: fen board (str) and color (str)
+# returns: str
+def generate_random_move(fen, color):
+    # variables
+    board = build_board_from_fen(fen, color)[:8]
+
+    # generate moves
+    moves = findall_king_moves(board, color)
+
+    # random choice by piece
+    # make list of pieces
+    p_lst = [i for i in moves]
+
+    # pick random pieces
+    rand_p = random.choice(p_lst)
+
+    # pick random move
+    move_lst = [i for i in moves[rand_p]]
+    rand_move = random.choice(move_lst)
+
+    # return random move and print random moves from that piece
+    print(str(rand_p)+": "+str(moves[rand_p]))
+    return rand_move

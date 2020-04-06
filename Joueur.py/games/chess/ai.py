@@ -61,53 +61,6 @@ class AI(BaseAI):
 
         color = self.player.color
         """
-        print("find all knight moves:")
-        knightmoves = findall_knight_moves(board, color)
-        print(knightmoves)
-        print("find enemy knight moves:")
-        knightmoves = findall_knight_moves(board, "white")
-        print(knightmoves)
-        
-        print("find all bishop moves:")
-        bishopmoves = findall_bishop_moves(board, color)
-        print(bishopmoves)
-        print("find all ememy bishop moves:")
-        bishopmoves = findall_bishop_moves(board, "white")
-        print(bishopmoves)
-        
-        print("find all castle moves:")
-        castlemoves = findall_castle_moves(board, color)
-        print(castlemoves)
-        print("find all ememy moves:")
-        castlemoves = findall_castle_moves(board, "white")
-        print(castlemoves)
-        
-        print("find all queen moves:")
-        queenmoves = findall_queen_moves(board, color)
-        print(queenmoves)
-        print("find all enemy queen moves:")
-        queenmoves = findall_queen_moves(board, "white")
-        print(queenmoves)
-        
-        print("find all pawn moves:")
-        pawnmoves = findall_pawn_moves(board, color)
-        print(pawnmoves)
-        print("find all enemy pawn moves:")
-        pawnmoves = findall_pawn_moves(board, "white")
-        print(pawnmoves)
-        
-
-        # test adding all items together
-        print("find ALL FRIEND moves:")
-        friend_moves = generate_all_nonking_moves(board, color)
-        print(friend_moves)
-        print(len(friend_moves))
-
-        # test generating all enemy moves
-        print("find ALL ENEMY moves:")
-        enemy_moves = generate_all_enemy_moves(board, color)
-        print(enemy_moves)
-
         # test generating all king moves
         print("find generic king move:")
         king_moves = generate_king_moves([7, 4])
@@ -157,4 +110,5 @@ class AI(BaseAI):
 
     # <<-- Creer-Merge: functions -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
     # if you need additional functions for your AI you can add them here
+    
     # <<-- /Creer-Merge: functions -->>

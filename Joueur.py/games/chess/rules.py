@@ -593,9 +593,9 @@ def findall_pawn_moves(board, color):
     return history
 
 
-# generate all non-king moves
-# takes: TBD
-# returns: TBD
+# generate all valid non-king moves
+# takes: board (list of lists) and color (str)
+# returns: dictionary of lists
 def generate_all_nonking_moves(board, color):
     # variables
     all_moves = {}
@@ -603,21 +603,21 @@ def generate_all_nonking_moves(board, color):
     # generate all moves except kings
     knights = findall_knight_moves(board, color)
     bishops = findall_bishop_moves(board, color)
-    #rooks = findall_castle_moves(board, color)
+    rooks = findall_castle_moves(board, color)
     queens = findall_queen_moves(board, color)
     pawns = findall_pawn_moves(board, color)
 
     # add them all together
-    for item in [bishops, pawns, knights, queens]:
+    for item in [bishops, rooks, pawns, knights, queens]:
         all_moves.update(item)
 
     # return all moves
     return all_moves
 
 
-# generate all enemy moves
-# takes: TBD
-# returns: TBD
+# generate all valid enemy moves (moves of opposite color to the player)
+# takes: board (list of lists) and color (str)
+# returns: dictionary of lists
 def generate_all_enemy_moves(board, color):
     # variables
     all_moves = {}
@@ -668,12 +668,9 @@ def generate_all_enemy_moves(board, color):
     return all_moves
 
 
-
-
-
-# generate all king moves
-# takes: TBD
-# returns: TBD
+# generate all valid king moves
+# takes: current position (list of int)
+# returns: list of lists
 def generate_king_moves(curr_pos):
     # variables
     y = curr_pos[0]
@@ -682,26 +679,23 @@ def generate_king_moves(curr_pos):
     final = []
 
     # remove anything out of bounds
-    for item in range(0, len(moves)):
+    for pos in moves:
 
         # check y vals to be in bounds
-        if moves[item][0] > 7 or moves[item][0] < 0:
-            continue
+        if pos[0] >= 0 and pos[0] <= 7:
+            # check if x val is in bounds
+            if pos[1] >= 0 and pos[1] <= 7:
 
-        # check x vals to be in bounds
-        elif moves[item][1] > 7 or moves[item][1] < 0:
-            continue
-
-        # else, then add this good item to a final list
-        final.append(moves[item])
+                # add item to valid moves
+                final.append(pos)
 
     # return all generated moves
     return final
 
 
 # check if the king is in check at a current move
-# takes:
-# returns:
+# takes: board (list of lists), current position (list of int) and enemy moves (dictionary of lists)
+# returns: list [bool, str]
 def is_king_in_check(board, curr_pos, enemy_moves):
     # variables
     curr_uci = coor_to_uci(curr_pos[0], curr_pos[1])
@@ -710,8 +704,8 @@ def is_king_in_check(board, curr_pos, enemy_moves):
     for piece in enemy_moves:
         for move in enemy_moves[piece]:
 
-            # check each move open by enemy
-            if curr_uci == move[3:5]:
+            # check each move to see if it is possible to reach from enemy pieces
+            if curr_uci == move[2:5]:
 
                 # found a move, king is in check at this move
                 return [True, move]
@@ -720,9 +714,9 @@ def is_king_in_check(board, curr_pos, enemy_moves):
     return [False, '']
 
 
-# find if a peice can take out a peice on the board to protect the king
-# takes: TBD
-# returns: TBD
+# find if a friendly peice can take out an enemy peice on the board to protect the king
+# takes: board (list of lists), enemy uci (str) and friend moves (dictionary of lists)
+# returns: list of str
 def asassinate_for_king(board, enemy_uci, friend_moves):
     # variables
     history = []
@@ -732,7 +726,7 @@ def asassinate_for_king(board, enemy_uci, friend_moves):
         for move in friend_moves[piece]:
 
             # check if any peices can take out the enemy
-            if move[3:5] == enemy_uci:
+            if move[2:5] == enemy_uci:
                 # found one that can take it out
                 history.append(move)
 
@@ -740,11 +734,15 @@ def asassinate_for_king(board, enemy_uci, friend_moves):
     if len(history) == 0:
         return [False, '']
     else:
+        # insert True, to the beginning of the list to test for positive matches
         history.insert(0, True)
         return history
 
 
-# block for king
+# friendly pieces block an oncoming check for king
+# takes: board (list of lists), king position (list of int), color (str), enemy uci (str), 
+#        friend moves (dictionary of lists) and enemy moves (dictionary of lists)
+# returns: list of str
 def block_for_king(board, king_pos, color, enemy_uci, friend_moves, enemy_moves):
     # variables
     enemy_pos = uci_to_coor(enemy_uci)
@@ -809,39 +807,38 @@ def block_for_king(board, king_pos, color, enemy_uci, friend_moves, enemy_moves)
 
             # if not in check then add this move to good moves
             if check_king[0] == False:
-                history = history + asassins[2:]
+                history = history + asassins[1:]
 
     # return sucessful block moves for king
     return history
 
 
-
-# make non-check move
+# make non-check king move
+# takes: board (list of lists), current position (list of int), enemy moves (dictionary of lists),
+#        and king moves (dictionary of lists)
+# returns: 
 def make_noncheck_move(board, curr_pos, enemy_moves, king_moves):
     # variables
     history = []
 
     # iterate through all king moves to find the ones not in check
-    for king in king_moves:
-        king_lst = king_moves[king]
-        for move in king_lst:
+    for move in king_moves:
 
-            # iterate through all enemy moves and see if the future move is in check
-            check_king = is_king_in_check(board, curr_pos, enemy_moves)
-            if check_king[0] == False:
+        # iterate through all enemy moves and see if the future move is in check
+        check_king = is_king_in_check(board, curr_pos, enemy_moves)
+        if check_king[0] == False:
 
-                # this is a good move
-                # add good move
-                history.append(move)
+            # add to valid moves
+            history.append(move)
 
     # return good moves
     return history
 
 
 
-# find all king moves
-# takes: TBD
-# returns: TBD
+# find all valid king moves for one color
+# takes: board (list of lists) and color (str)
+# returns: dictionary of lists
 def findall_king_moves(board, color):
     # variables
     history = {}
@@ -871,24 +868,29 @@ def findall_king_moves(board, color):
 
                 # generate all enemy moves
                 enemy_moves = generate_all_enemy_moves(board, color)
+                print("enemy len: "+str(len(enemy_moves)))
 
                 # check if king is in check, if true then the saving moves will be the only moves sent
                 check_king = is_king_in_check(board, [height, width], enemy_moves)
+                print("check king: "+str(check_king))
                 if check_king[0] == True:
+                    print("king is in check")
 
                     # find an action that gets king out of check
                     # find if anything can take that piece out
                     enemy_uci = check_king[1][0:2]
                     asassins = asassinate_for_king(board, enemy_uci, friend_moves)
+                    print("assassins: "+str(asassins))
                     if asassins[0] == True:
 
                         # take out piece
                         save_king_moves[asassins[1][0:2]] = [asassins[1:]]
 
                     # find if anything can get in the way
-                    block_moves = block_for_king(board, [height, width], color, enemy_uci, friend_moves, enemy_moves)
+                    #block_moves = block_for_king(board, [height, width], color, enemy_uci, friend_moves, enemy_moves)
 
                     # add these moves
+                    """
                     for hero in block_moves:
                         if hero[0:2] not in save_king_moves:
                             # add it
@@ -896,23 +898,23 @@ def findall_king_moves(board, color):
 
                         # add the good moves
                         save_king_moves[hero[0:2]] = save_king_moves[hero[0:2]] + [hero[3:5]]
-
+                    """
                     # if the king was in check, these moves have priority, only return these
                     return save_king_moves
 
 
                 # check each move king makes to make sure it isn't in check
-                kings_new_groove = make_noncheck_move(board, [height, width], enemy_moves, king_moves)
+                noncheck_king = make_noncheck_move(board, [height, width], enemy_moves, king_moves)
 
                 # check to make sure it's not empty
-                if len(kings_new_groove) != 0:
+                if len(noncheck_king) != 0:
 
                     # check each move to make sure it is valid
-                    for new_move in kings_new_groove:
-                        checked_moves = check_moves(board, [height, width], color, history, new_move, True)
+                    for new_move in noncheck_king:
+                        checked_move = check_moves(board, [height, width], color, history, new_move, True)
 
                         # make sure it was valid
-                        if checked_move == []:
+                        if checked_move != []:
                             
                             # make sure item is in history
                             curr_pos = coor_to_uci(height, width)
@@ -920,11 +922,11 @@ def findall_king_moves(board, color):
                                 history[curr_pos] = []
 
                             # add this move
-                            history[curr_pos] = history[curr_pos] + [curr_pos + checked_move[0] + checked_move[1]]
+                            history[curr_pos] = history[curr_pos] + [curr_pos + checked_move[0]]
 
 
     # add all king moves to friendly moves
-    history.update(friendly_moves)
+    history.update(friend_moves)
 
     # return all king moves
     return history
