@@ -51,10 +51,26 @@ class AI(BaseAI):
         #print("current board:")
         board = fen[:8]
         new_board = fen[:8]
-        board[6][1] = '0'
-        board[6][0] = '0'
+
+        # pawn promotion testing
+        board[6][1] = 'p'
+        board[6][0] = 'p'
         board[6][2] = '0'
         board[6][3] = '0'
+        board[7][0] = '0'
+        board[7][1] = 'Q'
+        board[7][2] = '0'
+
+        # remove other pawns
+        board[1][0] = '0'
+        board[1][1] = '0'
+        board[1][2] = '0'
+        board[1][3] = '0'
+        board[1][4] = '0'
+        board[1][5] = '0'
+        board[1][6] = '0'
+        board[1][7] = '0'
+
         board[5][0] = 'P' # test knight enemy
         board[1][4] = '0' # test enemy king
         print_board(board)
@@ -76,6 +92,10 @@ class AI(BaseAI):
         print(len(king_moves))
         """
 
+        print("find pawn moves:")
+        pawn_moves = findall_pawn_moves(board, color)
+        print(pawn_moves)
+        print(len(pawn_moves))
         # <<-- /Creer-Merge: start -->>
 
     def game_updated(self) -> None:
@@ -105,6 +125,7 @@ class AI(BaseAI):
         """
         # <<-- Creer-Merge: makeMove -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
         # Put your game logic here for makeMove
+        # calculate dictionary of all moves
         return generate_random_move(self.game.fen, self.player.color)
         # <<-- /Creer-Merge: makeMove -->>
 

@@ -132,8 +132,8 @@ def find_enemy_color(color):
 
 
 # find if peice is an enemy piece
-# takes: TBD
-# returns: TBD
+# takes: piece (str) and color (str)
+# returns: bool
 def amienemy(piece, color):
 
     # check for black
