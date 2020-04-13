@@ -1,9 +1,9 @@
 ##############################################################
 # Name: Hannah Reinbolt
-# Date: 3-23-2020
+# Date: 4-12-2020
 # Class:CS 5400-101 - Intro to AI
-# Assignment: Game Assignment #1 - Chess with Random Choice AI
-# Note: This is the Game Logic file. Game rules and logic.
+# Assignment: Game Assignment #2 - Iterative Deepening Depth Limited Minimax AI
+# Note: This file contains all the AI functionality.
 #############################################################
 
 # libraries
@@ -113,7 +113,6 @@ def find_min_or_max(moves, choice):
     # variables
     move = ""
     score = 0
-    #print("moves: "+str(moves))
 
     # chose max or min
     if choice == "max":
@@ -136,6 +135,16 @@ def find_min_or_max(moves, choice):
 
 
 # scoring heuristic, calculates how each move is scored against parents and other levels
+####################################
+# How this works:
+####################################
+# subtract enemy points, add friend points. 
+# All children are compared and best child is computed and compared with parent. 
+# curr_score = current default parent score
+# next_score = best child score of all levels and children below parent
+# High enemy capture points = less desireable, High friend capture points = more desireable
+# odd level = enemy level, even level = friend level
+
 # takes: level number (int), current score (int) and next score (int)
 # returns: int
 def score_heuristic(level, curr_score, next_score):
@@ -143,6 +152,8 @@ def score_heuristic(level, curr_score, next_score):
     odd = amiodd(level)
     final = 0
 
+    # subtract the enemy points and add the friend points
+    # the higher the friend points, the more desireable of a move it is
     if odd == True:
         final = next_score - curr_score
     else:
@@ -151,8 +162,10 @@ def score_heuristic(level, curr_score, next_score):
     return final
 
 
-# recursive function
-def recursive_deep(board, color, pastmove, score, level, stop):
+# find best minimax move by level recursivly
+# takes: board (list of lists), color (str), pastmove (str), score (int), level (int) and stop (int)
+# returns: list (str, int)
+def minimax_by_level_recursive(board, color, pastmove, score, level, stop):
     # variables
     history = {}
     result_move = []
@@ -176,7 +189,7 @@ def recursive_deep(board, color, pastmove, score, level, stop):
             move_score = find_move_score(scores, move)
 
             # find new score from deeper levels
-            new_score = recursive_deep(nextboard, enemy_color, move, move_score, level+1, stop)[1]
+            new_score = minimax_by_level_recursive(nextboard, enemy_color, move, move_score, level+1, stop)[1]
             
             # calculate new score based on future levels
             final_score = score_heuristic(level, move_score, new_score)
@@ -188,10 +201,8 @@ def recursive_deep(board, color, pastmove, score, level, stop):
             # add
             history[final_score] = history[final_score] + [move]
 
-    # find min or max score of this level and return
     # if level is odd then return max score, if even then return min
     islevelodd = amiodd(level)
-    #print("history: "+str(history))
 
     # find min or max valued move at this level
     if islevelodd == True:
@@ -203,13 +214,15 @@ def recursive_deep(board, color, pastmove, score, level, stop):
     return result_move
 
    
-# main minimax function
-def minimax_iter_deep(fen, color):
+# iterative deepening depth limited minimax move generation
+# takes: fen board (str) and color (str)
+# returns: str
+def iddl_minimax(fen, color):
     # variables
     board = build_board_from_fen(fen, color)[:8]
 
     # start recursive function to find iterative deep move
-    final_move = recursive_deep(board, color, '', 0, 0, 1)
+    final_move = minimax_by_level_recursive(board, color, '', 0, 0, 2)
 
     # return best move
     return final_move[0]

@@ -1,15 +1,20 @@
 #######################################################################
 # Name: Hannah Reinbolt
-# Date: 3-23-2020
+# Date: 4-12-2020
 # Class: 5400-101 - Intro to AI
-# Assignment: Game Assignment #1 - Random AI moves
-# Note: This file defines all rules for pieces and game.
+# Assignment: Game Assignment #2 - Iterative Deepening Depth Limited Minimax AI
+# Note: This file defines all rules for pieces.
 ######################################################################
 
 # libraries
 from games.chess.game_logic import *
 import copy
 import random
+
+
+#########################################################################################
+# CHECK MOVES
+#########################################################################################
 
 # check moves for collision, and valid moves.
 # takes: board (list of lists), current position (list of int), color (str), history (dict of lists), 
@@ -85,6 +90,10 @@ def check_moves(board, curr_pos, color, history, gen_move, nohop):
     return []
 
 
+##########################################################################
+# KNIGHTS
+#########################################################################
+
 # generate all knight moves
 # takes: current position (list of int)
 # returns: list of lists
@@ -157,6 +166,11 @@ def findall_knight_moves(board, color):
     return history
 
 
+#######################################################################################
+# BISHOPS
+#######################################################################################
+
+
 # generate all bishop moves
 # takes: current position (list of ints)
 # returns: list of lists
@@ -190,7 +204,6 @@ def move_bishop(curr_pos):
 
     # return all generated moves
     return final_lst
-
 
 
 # find all valid bishop moves of one color
@@ -248,6 +261,10 @@ def findall_bishop_moves(board, color):
     # return all bishop moves
     return history
 
+
+#######################################################################################
+# ROOKS
+#######################################################################################
 
 # generate all valid castle moves
 # takes: current position (list of ints)
@@ -365,6 +382,11 @@ def findall_castle_moves(board, color):
     return history
 
 
+#######################################################################################
+# QUEENS
+######################################################################################
+
+
 # find all valid queen moves of one color
 # takes: board (list of lists) and color (str)
 # returns: dictionary of lists
@@ -423,6 +445,11 @@ def findall_queen_moves(board, color):
 
     # return all queen moves
     return history
+
+
+######################################################################################
+# PAWNS
+######################################################################################
 
 
 # find enemies for both sides for black and white
@@ -512,7 +539,6 @@ def promote_pawn(color):
 
     # return promotion
     return result
-
 
 
 # generate all valid pawn moves of one color
@@ -631,6 +657,11 @@ def findall_pawn_moves(board, color):
     return history
 
 
+###################################################################################
+# NONKING AND ENEMY MOVE GENERATION
+###################################################################################
+
+
 # generate all valid non-king moves
 # takes: board (list of lists) and color (str)
 # returns: dictionary of lists
@@ -704,6 +735,11 @@ def generate_all_enemy_moves(board, color):
 
     # return moves
     return all_moves
+
+
+####################################################################################
+# KINGS
+###################################################################################
 
 
 # find all moves for a specific piece
@@ -801,7 +837,6 @@ def will_moves_put_king_in_check(board, color, king_pos, friend_moves, enemy_mov
 
     # return good moves
     return history
-
 
 
 # check if the king is in check at a current move
@@ -921,7 +956,6 @@ def make_noncheck_move(board, curr_pos, enemy_moves, king_moves):
     return history
 
 
-
 # find all valid king moves for one color
 # takes: board (list of lists) and color (str)
 # returns: dictionary of lists
@@ -955,11 +989,10 @@ def findall_king_moves(board, color):
 
                 # generate all enemy moves
                 enemy_moves = generate_all_enemy_moves(board, color)
-                print("enemy len: "+str(len(enemy_moves)))
 
                 # check if king is in check, if true then the saving moves will be the only moves sent
                 check_king = is_king_in_check(board, [height, width], enemy_moves)
-                print("check king: "+str(check_king))
+                #print("check king: "+str(check_king))
                 if check_king[0] == True:
                     incheck = True
 
@@ -967,16 +1000,15 @@ def findall_king_moves(board, color):
                     # find if anything can take that piece out
                     enemy_uci = check_king[1][0:2]
                     asassins = asassinate_for_king(board, enemy_uci, friend_moves)
-                    print("assassins: "+str(asassins))
+                    #print("assassins: "+str(asassins))
                     if asassins[0] == True:
 
                         # take out piece
                         save_king_moves[asassins[1][0:2]] = asassins[1:]
 
-                    print("blocked moves next")
                     # find if anything can get in the way
                     block_moves = block_for_king(board, [height, width], color, enemy_uci, friend_moves, enemy_moves)
-                    print("blocked: "+str(block_moves))
+                    #print("blocked: "+str(block_moves))
                     # add these moves
                     for hero in block_moves:
                         h = hero[0:2]
@@ -988,7 +1020,7 @@ def findall_king_moves(board, color):
                         save_king_moves[h] = save_king_moves[h] + [hero]
                     
                     # if the king was in check, these moves have priority, only return these
-                    print(save_king_moves)
+                    #print("save king moves: "+str(save_king_moves))
 
 
                 # check each move king makes to make sure it isn't in check
@@ -1028,6 +1060,10 @@ def findall_king_moves(board, color):
     # return all king moves
     return history
 
+
+####################################################################################
+# ALL MOVE GENERATION
+###################################################################################
 
 
 # generate moves for all pieces

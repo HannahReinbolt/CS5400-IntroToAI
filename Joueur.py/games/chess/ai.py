@@ -46,7 +46,7 @@ class AI(BaseAI):
         #print("print chess notation board:")
         chess_bd = build_chess_board()
         #print_board(chess_bd)
-        print(self.player.color)
+        #print(self.player.color)
 
         #print("current board:")
         board = fen[:8]
@@ -73,12 +73,12 @@ class AI(BaseAI):
 
         board[5][0] = 'P' # test knight enemy
         board[1][4] = '0' # test enemy king
-        print_board(board)
+        #print_board(board)
 
         color = self.player.color
 
-        best = minimax_iter_deep(self.game.fen, self.player.color)
-        print("best move: "+str(best))
+        #best = minimax_iter_deep(self.game.fen, self.player.color)
+        #print("best move: "+str(best))
         """
         # test generating all king moves
         print("find generic king move:")
@@ -129,8 +129,9 @@ class AI(BaseAI):
         """
         # <<-- Creer-Merge: makeMove -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
         # Put your game logic here for makeMove
-        # calculate dictionary of all moves
-        return minimax_iter_deep(self.game.fen, self.player.color)
+
+        # calculate an iterative deepening depth limited minimax move 
+        return iddl_minimax(self.game.fen, self.player.color)
         # <<-- /Creer-Merge: makeMove -->>
 
     # <<-- Creer-Merge: functions -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.

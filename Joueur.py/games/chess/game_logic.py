@@ -1,8 +1,8 @@
 ##############################################################
 # Name: Hannah Reinbolt
-# Date: 3-23-2020
+# Date: 4-12-2020
 # Class:CS 5400-101 - Intro to AI
-# Assignment: Game Assignment #2
+# Assignment: Game Assignment #2 - Iterative Deepening Depth Limited Minimax AI
 # Note: This is where game logic and game helper functions are stored.
 #############################################################
 
@@ -73,7 +73,7 @@ def build_board_from_move(oldboard, move):
     # check if a castle move
     elif move in castle_moves:
         # perform a castle
-        print("castle here")
+        castle = "castle moves here"
 
     # check if regular capture or new move
     else:
