@@ -607,8 +607,8 @@ def findall_pawn_moves(board, color):
 
     # find all pawn moves
     for height in range(0, len(board)):
-        for width in range(0, len(board[height])):
-
+        for width in range(0, len(board[1])):
+            
             # check choice
             if board[height][width] == choice:
 
@@ -679,8 +679,8 @@ def generate_all_enemy_moves(board, color):
     pawns = findall_pawn_moves(board, enemy_color)
 
     # find "fake" enemy king moves, more like a boundery
-    for height in range(0, 7):
-        for width in range(0, 7):
+    for height in range(0, len(board)):
+        for width in range(0, len(board[1])):
 
             # if found that king
             if board[height][width] == choice:
@@ -940,8 +940,8 @@ def findall_king_moves(board, color):
         choice = "K"
 
     # find all king moves
-    for height in range(0, 7):
-        for width in range(0, 7):
+    for height in range(0, len(board)):
+        for width in range(0, len(board[0])):
 
             # check choice
             if board[height][width] == choice:

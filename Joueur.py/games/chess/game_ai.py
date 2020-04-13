@@ -113,6 +113,7 @@ def find_min_or_max(moves, choice):
     # variables
     move = ""
     score = 0
+    #print("moves: "+str(moves))
 
     # chose max or min
     if choice == "max":
@@ -190,7 +191,7 @@ def recursive_deep(board, color, pastmove, score, level, stop):
     # find min or max score of this level and return
     # if level is odd then return max score, if even then return min
     islevelodd = amiodd(level)
-    print("history: "+str(history))
+    #print("history: "+str(history))
 
     # find min or max valued move at this level
     if islevelodd == True:
@@ -205,7 +206,7 @@ def recursive_deep(board, color, pastmove, score, level, stop):
 # main minimax function
 def minimax_iter_deep(fen, color):
     # variables
-    board = build_board_from_fen(fen, color)
+    board = build_board_from_fen(fen, color)[:8]
 
     # start recursive function to find iterative deep move
     final_move = recursive_deep(board, color, '', 0, 0, 1)
