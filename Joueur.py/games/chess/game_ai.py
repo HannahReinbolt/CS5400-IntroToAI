@@ -34,7 +34,7 @@ def generate_random_move(fen, color):
     rand_move = random.choice(move_lst)
 
     # return random move and print random moves from that piece
-    print(str(rand_p)+": "+str(moves[rand_p]))
+    #print(str(rand_p)+": "+str(moves[rand_p]))
     return rand_move
 
 
@@ -89,47 +89,128 @@ def score_board(board, moves):
     return scored
 
 
-# find minimum value move from current turn played by player
-# takes: moves (dictionary of lists)
-# returns: str
-def find_min(moves):
-    # variables
-    result = ""
+# find score of move in the completed scoring dictionary
+# takes: scores (dictionary of lists) and move (str)
+# returns: list (str, int)
+def find_move_score(scores, move):
 
-    # find min from moves
-    min_move = min(moves.keys())
-    small = moves[min_move]
+    # find score
+    for score in scores:
+        for item in scores[score]:
+
+            # check for the move
+            if item == move:
+                return score
+
+    # else return empty 
+    return 0
+
+
+# find minimum or maximum value move from current turn played by player
+# takes: moves (dictionary of lists) and choice (str)
+# returns: str
+def find_min_or_max(moves, choice):
+    # variables
+    move = ""
+    score = 0
+
+    # chose max or min
+    if choice == "max":
+        score = max(moves)
+    else:
+        score = min(moves)
+
+    # find list from moves
+    move_lst = moves[score]
 
     # if there are more than one move, then chose a random min value
-    if len(small) > 1:
-        result = random.choice(small)
+    if len(move_lst) > 1:
+        move = random.choice(move_lst)
 
     # otherwise return single move
     else:
-        result = small
+        move = move_lst[0]
 
-    return result
+    return [move, score]
 
 
-# find maximum value move from current turn played by player
-# takes: moves (dictionary of lists)
-# returns: str
-def find_max(moves):
+# scoring heuristic, calculates how each move is scored against parents and other levels
+# takes: level number (int), current score (int) and next score (int)
+# returns: int
+def score_heuristic(level, curr_score, next_score):
     # variables
-    result = ""
-    
-    # find max from moves
-    max_move = max(moves.keys())
-    big = moves[max_move]
+    odd = amiodd(level)
+    final = 0
 
-    # if there is more than one move, then chose a random max move
-    if len(big) > 1:
-        result = random.choice(big)
-
-    # otherwise return single move
+    if odd == True:
+        final = next_score - curr_score
     else:
-        result = big
+        final = next_score + curr_score
 
-    return result
+    return final
+
+
+# recursive function
+def recursive_deep(board, color, pastmove, score, level, stop):
+    # variables
+    history = {}
+    result_move = []
+    enemy_color = find_enemy_color(color)
+    final_score = 0
+
+    # check level
+    if level == stop:
+        return [pastmove, score]
+
+    # if not hit level yet then generate next level
+    all_moves = generate_all_moves(board, color)
+    scores = score_board(board, all_moves)
+
+    # calculate next level for each move
+    for piece in all_moves:
+        for move in all_moves[piece]:
+
+            # build board for this move
+            nextboard = build_board_from_move(board, move)
+            move_score = find_move_score(scores, move)
+
+            # find new score from deeper levels
+            new_score = recursive_deep(nextboard, enemy_color, move, move_score, level+1, stop)[1]
+            
+            # calculate new score based on future levels
+            final_score = score_heuristic(level, move_score, new_score)
+
+            # add this to a dictionary
+            if final_score not in history:
+                history[final_score] = []
+
+            # add
+            history[final_score] = history[final_score] + [move]
+
+    # find min or max score of this level and return
+    # if level is odd then return max score, if even then return min
+    islevelodd = amiodd(level)
+    print("history: "+str(history))
+
+    # find min or max valued move at this level
+    if islevelodd == True:
+        result_move = find_min_or_max(history, "max")
+    else:
+        result_move = find_min_or_max(history, "min")
+
+    # return best move and score for this level
+    return result_move
+
+   
+# main minimax function
+def minimax_iter_deep(fen, color):
+    # variables
+    board = build_board_from_fen(fen, color)
+
+    # start recursive function to find iterative deep move
+    final_move = recursive_deep(board, color, '', 0, 0, 1)
+
+    # return best move
+    return final_move[0]
 
 

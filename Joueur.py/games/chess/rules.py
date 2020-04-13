@@ -577,7 +577,7 @@ def generate_pawn_moves(board, curr_pos, color):
 
     # check standard move
     else:
-        print("pawn y position: "+str(move[1])+" pawn x position: "+str(x))
+        #print("pawn y position: "+str(move[1])+" pawn x position: "+str(x))
         # check if right above is free
         if board[move[1]][x] == '0':
             new_uci = coor_to_uci(move[1], x)
@@ -679,8 +679,8 @@ def generate_all_enemy_moves(board, color):
     pawns = findall_pawn_moves(board, enemy_color)
 
     # find "fake" enemy king moves, more like a boundery
-    for height in range(0, len(board)):
-        for width in range(0, len(board[1])):
+    for height in range(0, 7):
+        for width in range(0, 7):
 
             # if found that king
             if board[height][width] == choice:
@@ -940,8 +940,8 @@ def findall_king_moves(board, color):
         choice = "K"
 
     # find all king moves
-    for height in range(0, len(board)):
-        for width in range(0, len(board[1])):
+    for height in range(0, 7):
+        for width in range(0, 7):
 
             # check choice
             if board[height][width] == choice:

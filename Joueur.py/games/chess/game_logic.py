@@ -7,7 +7,7 @@
 #############################################################
 
 # libraries
-
+import copy
 
 # build board from fen line
 # takes: fen str
@@ -46,6 +46,44 @@ def build_board_from_fen(board, color):
     # return board: 2D list of lists
     return result
 
+
+# build board from given move
+# takes: board (list of lists) and move (str)
+# returns: list of lists
+def build_board_from_move(oldboard, move):
+    # variables
+    board = copy.deepcopy(oldboard)
+    # coordinates
+    start_c = uci_to_coor(move[0:2])
+    dest_c = uci_to_coor(move[2:4])
+
+    # start and destination piece
+    start_p = board[start_c[0]][start_c[1]]
+    dest_p = board[dest_c[0]][dest_c[1]]
+
+    # castle moves
+    castle_moves = ['', '', '', '']
+
+    # check if a pawn promo
+    if len(move) == 5:
+        # upgrade and replace
+        board[start_c[0]][start_c[1]] = '0'
+        board[dest_c[0]][dest_c[1]] = move[4]
+
+    # check if a castle move
+    elif move in castle_moves:
+        # perform a castle
+        print("castle here")
+
+    # check if regular capture or new move
+    else:
+        # replace with capture or new move
+        board[start_c[0]][start_c[1]] = '0'
+        board[dest_c[0]][dest_c[1]] = dest_p
+
+    # return new board
+    return board
+    
 
 # build standard chess board
 # takes: nothing
@@ -153,5 +191,19 @@ def amienemy(piece, color):
             return False
         else:
             return True
+
+
+# check if odd or even
+# takes: odd (int)
+# returns: bool
+def amiodd(odd):
+    
+    # check if odd - can I get this check in real life
+    if odd%2 == 0:
+        return False
+    else:
+        return True
+
+
 
 

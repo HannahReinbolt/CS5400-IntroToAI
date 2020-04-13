@@ -76,6 +76,9 @@ class AI(BaseAI):
         print_board(board)
 
         color = self.player.color
+
+        best = minimax_iter_deep(self.game.fen, self.player.color)
+        print("best move: "+str(best))
         """
         # test generating all king moves
         print("find generic king move:")
@@ -91,11 +94,12 @@ class AI(BaseAI):
         print(king_moves)
         print(len(king_moves))
         """
-
+        """
         print("find pawn moves:")
         pawn_moves = findall_pawn_moves(board, color)
         print(pawn_moves)
         print(len(pawn_moves))
+        """
         # <<-- /Creer-Merge: start -->>
 
     def game_updated(self) -> None:
@@ -126,7 +130,7 @@ class AI(BaseAI):
         # <<-- Creer-Merge: makeMove -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
         # Put your game logic here for makeMove
         # calculate dictionary of all moves
-        return generate_random_move(self.game.fen, self.player.color)
+        return minimax_iter_deep(self.game.fen, self.player.color)
         # <<-- /Creer-Merge: makeMove -->>
 
     # <<-- Creer-Merge: functions -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
